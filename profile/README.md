@@ -1,40 +1,115 @@
 # SubterraAI
 
-SubterraAI has evolved into a highly modular platform that integrates edge computing and real-time image analysis from Minirhizotron tubes. These high-resolution cameras are strategically placed to capture root structures at multiple soil depths, enabling in-situ root phenotyping without disturbing the soil.
+SubterraAI is a highly modular software platform for automating image‐based root phenotyping using non-invasive data collection. By integrating edge computing with advanced deep learning models and real-time image analysis from minirhizotron tubes, SubterraAI empowers researchers to capture and analyze root structures across multiple soil depths—all without disturbing the natural soil environment.
+
+---
+
+## Flexibility and Customization
+
+SubterraAI is designed with versatility in mind to meet the diverse needs of researchers, developers, and agronomists. The platform offers:
+- **Intuitive Annotation Tools**: Easily label and annotate root images with integrated tools to generate high-quality training datasets.
+- **Custom Model Upload**: Seamlessly upload and manage custom deep learning models, enabling tailored analyses for specific research applications.
+- **Command-Line Interface**: Access powerful command-line utilities for tasks such as training new models, fine-tuning existing ones, and running predictions.
+- **RESTful API Services**: Leverage robust API endpoints for automated data processing, integration into existing workflows, and remote system operations.
+
+---
 
 ## Key Features
 
-### 1. **Split Computing for Efficient Data Processing**
-The development of SubterraAI now leverages **split computing**, a new feature designed to tackle the challenges of deploying large deep neural networks (DNNs) on memory-constrained devices. This approach splits the DNN into two parts:
-- **Edge Device**: Executes a lightweight version of the model to handle preliminary data processing.
-- **Cloud Server**: Offloads complex data processing tasks, optimizing energy efficiency and reducing communication latency.
+### Split Computing for Efficient Data Processing
+- **Edge Device Processing**: Executes a lightweight, split version of deep neural networks (DNNs) for preliminary image analysis, reducing latency and conserving battery life.
+- **Cloud Server Processing**: Handles computationally intensive tasks (such as full-scale segmentation and trait analysis) using robust hardware, ensuring energy efficiency and real-time feedback.
+- **YOLOv8 Architecture**: Leverages YOLOv8 for fast, real-time predictions while maintaining high segmentation accuracy even when the network is split between devices.
 
-By employing split computing, SubterraAI ensures rapid data processing in the field while maintaining model accuracy. Using the **YOLOv8 architecture**, we have demonstrated that splitting the network can compress the model while retaining the necessary accuracy for real-time root analysis. This innovation allows for faster processing and improved resource management, even in resource-constrained environments.
+### Advanced Multimodal Deep Learning
+SubterraAI supports a suite of state-of-the-art models, each tailored for different phenotyping tasks:
+- **U-Net**: Provides pixel-level segmentation ideal for detailed and consistent root mapping.
+- **YOLOv8**: Enables rapid object detection and segmentation, making it optimal for real-time field applications.
+- **Detectron2**: Offers robust segmentation performance under heterogeneous and challenging environmental conditions.
 
-### 2. **Advanced Multimodal Deep Learning Architecture**
-SubterraAI incorporates an advanced multimodal deep learning architecture (v3) that includes the following models:
-- **U-Net**: Excels in consistent data environments, such as medical imaging, providing robust root segmentation.
-- **YOLOv8**: Optimized for real-time predictions, suitable for scenarios requiring rapid root structure analysis.
-- **Detectron2**: Particularly effective for heterogeneous datasets, adaptable to field conditions where environmental factors vary.
+Performance metrics include:
+- *YOLOv8*: Precision – 0.85, Recall – 0.85  
+- *Detectron2*: Precision – 0.98, Recall – 0.98
 
-We achieved notable precision and recall scores:
-- **YOLOv8**: Precision - 0.85, Recall - 0.85
-- **Detectron2**: Precision - 0.98, Recall - 0.98
+### Comprehensive Data Preprocessing & Transfer Learning
+- **Preprocessing Techniques**: Implements Gaussian filtering, adaptive histogram equalization, Canny edge detection, and dynamic illumination correction to mitigate image artifacts (e.g., condensation, debris, and inconsistent lighting).
+- **Multispectral Imaging Integration**: Uses LED lighting at different wavelengths to enhance contrast between roots and soil.
+- **Transfer Learning Framework**: A base U-Net model (pre-trained on diverse datasets such as PRMI) is fine-tuned on crop-specific data (e.g., sorghum) to adapt to various field conditions while maintaining high generalization.
 
-This combination of models allows us to flexibly select the best-suited model for each specific task, ensuring accurate root segmentation and trait identification.
+---
 
 ## How It Works
 
-1. **Data Capture**: Minirhizotron tubes capture high-resolution images of root structures at multiple soil depths.
-2. **Edge Processing**: Initial image analysis and preprocessing are performed on edge devices using a split version of the DNN.
-3. **Cloud Processing**: The preprocessed data is sent to the cloud server for advanced image analysis using the multimodal deep learning architecture.
-4. **Results**: Real-time data analysis enables root phenotyping without soil disturbance, providing researchers with actionable insights.
+1. **Data Capture**  
+   Minirhizotron tubes capture high-resolution images at multiple soil depths. Each image is tagged with environmental metadata (temperature, humidity, soil moisture, etc.) to enhance analysis accuracy.
 
-## Why SubterraAI?
+2. **Edge Processing**  
+   A split version of the DNN runs on edge devices for rapid preprocessing and preliminary analysis, minimizing communication overhead and conserving energy.
 
-- **Energy Efficiency**: Split computing reduces the computational load on edge devices, optimizing battery life and processing speed.
-- **Real-Time Analysis**: YOLOv8's real-time capabilities enable rapid data processing and feedback in field conditions.
-- **Flexible Model Selection**: The combination of U-Net, YOLOv8, and Detectron2 allows for tailored analysis depending on environmental and data conditions.
-- **High Accuracy**: Achieved precision and recall scores ensure reliable root segmentation and trait identification.
+3. **Cloud Processing**  
+   Preprocessed data is transmitted securely to cloud servers where advanced image analysis is performed using the multimodal deep learning architecture.
 
+4. **Results Delivery**  
+   Processed data—including segmented root images and extracted phenotypic traits—is returned in real time, providing actionable insights for plant breeders and researchers.
 
+---
+
+## Platform Architecture
+
+SubterraAI is built with a modular, scalable architecture comprising several layers:
+
+### 1. Presentation Layer
+- **User Interface**: A ReactJS-based web application that allows users to upload images, view datasets, and interact with analysis results.
+- **Visualization Tools**: Integrated dashboards and graphical tools (e.g., a Grafana-based admin panel) provide real-time insights into system performance and phenotypic data.
+
+### 2. Business Logic Layer
+- **RESTful APIs**: Exposes endpoints for managing datasets, images, masks, and models.
+  - **Datasets API**: Create, retrieve, update, and delete datasets.
+  - **Images API**: Upload, list, and delete images associated with datasets.
+  - **Masks API**: Predict, retrieve, and export root masks (including integration with tools like LabelMe).
+  - **Models API**: Manage model uploads, updates, and retrievals.
+- **Data Validation & Processing**: Ensures robust image preprocessing (normalization, augmentation, and noise reduction) before analysis.
+
+### 3. Data Access and Storage Layers
+- **Data Access Layer**: Uses Object Relational Mapping (ORM) to interact with the database, streamlining CRUD operations.
+- **Storage Layer**: Combines secure file storage (local or cloud-based, e.g., AWS S3) with structured database systems to manage metadata, model weights, and image files.
+
+### Command Line Services
+The platform also provides several command-line tools to complement the web services:
+- **predict.py**: Processes individual images to generate predictions.
+- **decompose_layers.py**: Splits images into segments for detailed analysis.
+- **build_composites.py**: Reconstructs full composite images from segmented outputs.
+- **train.py**: Enables custom model training or fine-tuning using new datasets, facilitating rapid adaptation for different crops and field conditions.
+
+---
+
+## Performance & Evaluation
+
+SubterraAI has been rigorously evaluated using high-performance NVIDIA H100 GPUs and benchmarks across three architectures:
+- **U-Net**: Excels in detailed segmentation with high accuracy and low validation loss.
+- **YOLOv8**: Offers rapid detection with steadily improving precision and recall during training.
+- **Detectron2**: Provides superior segmentation performance in noisy environments, with precision stabilizing around 0.92 and recall near 0.80.
+
+Additional evaluations include depth-wise root area comparisons across different sorghum genotypes, revealing variations in root distribution critical for drought resilience and carbon sequestration.
+
+---
+
+## Future Directions
+
+SubterraAI is continuously evolving. Future enhancements include:
+- **Expanded Trait Extraction**: Automated calculation of root length, diameter, branching patterns, and anatomical features.
+- **Enhanced Real-Time Processing**: Further optimization for field deployment under variable environmental conditions.
+- **Broader Model Integration**: Continued development of new models and transfer learning strategies to support a wider range of crops and soil types.
+- **User-Centric Customization**: Improved annotation tools and command-line services for tailoring models to specific research needs.
+
+---
+
+## Getting Started
+
+For installation, setup instructions, and detailed API documentation, please refer to our [GitHub repository](https://github.com/SubterraAI-Organization/backend.git).
+
+SubterraAI is open source and welcomes contributions from the research and developer community to help advance sustainable agriculture and precision breeding.
+
+---
+
+By combining robust edge-cloud processing, advanced multimodal deep learning, and a modular architecture, SubterraAI provides a powerful and flexible solution for next-generation root phenotyping research.
